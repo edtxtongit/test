@@ -1,0 +1,30 @@
+name: Build Kernel Module
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Install build deps
+      run: |
+        sudo apt update
+        sudo apt install -y build-essential linux-headers-$(uname -r)
+
+    - name: Build module
+      run: |
+        make
+        ls -l *.ko || true
+
+    - name: Upload hello.ko
+      uses: actions/upload-artifact@v3
+      with:
+        name: kernel-module
+        path: "*.ko"
